@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Wordle Game</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+	<main class="game-shell">
+		<header class="game-header">
+			<div>
+				<p class="eyebrow">Daily word puzzle</p>
+				<h1>WORDLE</h1>
+			</div>
+			<div class="attempt-count">{{ guesses|length }} <span>/ 6</span></div>
+		</header>
+
+		<section class="intro" aria-labelledby="game-instructions">
+			<p id="game-instructions">Guess the five-letter word in six tries.</p>
+			<p class="tip">Green means right letter, right place. Yellow means right letter, wrong place.</p>
+		</section>
+
+		<section class="board" aria-label="Guess board">
+			{% for entry in guesses %}
+				<div class="guess-row submitted" aria-label="Guess {{ loop.index }}: {{ entry.word }}">
+					{% for letter in entry.word[:5] %}
+						<span class="tile {{ entry.statuses[loop.index0] }}">{{ letter|upper }}</span>
+					{% endfor %}
+					{% for blank in range(5 - (entry.word|length)) %}
+						<span class="tile empty"></span>
+					{% endfor %}
+				</div>
+			{% endfor %}
+			{% for row in range(6 - (guesses|length)) %}
+				<div class="guess-row" aria-hidden="true">
+					{% for tile in range(5) %}
+						<span class="tile empty"></span>
+					{% endfor %}
+				</div>
+			{% endfor %}
+		</section>
+
+		{% if message %}
+			<p class="message {% if game_over %}game-over-message{% endif %}" role="status">{{ message }}</p>
+		{% endif %}
+
+		{% if game_over %}
+			<section class="answer-panel" aria-live="polite">
+				<p class="answer-label">{{ 'Solved in ' ~ (guesses|length) ~ ' tries' if won else 'The answer was' }}</p>
+				<strong>{{ answer|upper if answer else 'See the message above' }}</strong>
+			</section>
+		{% else %}
+		<form class="guess-form" method="post">
+			<label for="guess">Your next guess</label>
+			<div class="form-row">
+				<input id="guess" name="guess" type="text" minlength="5" maxlength="5"
+					   pattern="[A-Za-z]{5}" autocomplete="off" autocapitalize="none"
+					   placeholder="ENTER WORD" required autofocus>
+				<button type="submit">Guess <span aria-hidden="true">&rarr;</span></button>
+			</div>
+		</form>
+		{% endif %}
+
+		<footer class="legend" aria-label="Tile color legend">
+			<span><i class="legend-swatch correct"></i>Correct</span>
+			<span><i class="legend-swatch present"></i>Present</span>
+			<span><i class="legend-swatch absent"></i>Absent</span>
+		</footer>
+	</main>
+</body>
+</html>
