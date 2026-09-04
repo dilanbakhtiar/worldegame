@@ -7,12 +7,15 @@ const answerPanel = document.querySelector("#answer-panel");
 const answerLabel = document.querySelector("#answer-label");
 const answer = document.querySelector("#answer");
 const resetButton = document.querySelector("#reset-button");
+const keyboard = document.querySelector(".keyboard");
 
 const fallbackWords = ["apple", "beach", "blaze", "brave", "bread", "brick", "cabin", "candy", "chair", "charm", "chase", "cloud", "crown", "dance", "dream", "eagle", "earth", "flame", "flash", "flute", "fruit", "giant", "globe", "grape", "grass", "green", "heart", "honey", "house", "jelly", "knife", "lemon", "light", "magic", "maple", "metal", "money", "mouse", "music", "ocean", "olive", "orbit", "otter", "panda", "peach", "pearl", "piano", "pilot", "plant", "plaza", "pride", "queen", "quiet", "raven", "river", "robot", "robin", "rough", "round", "royal", "scale", "scarf", "shark", "sheep", "shine", "shore", "skate", "skull", "slate", "smile", "snail", "snake", "spice", "spoon", "sport", "stack", "steam", "stone", "storm", "sugar", "table", "tiger", "toast", "token", "tower", "train", "treat", "truck", "tulip", "uncle", "vivid", "whale", "wheat", "world", "zebra"];
 
 let words = fallbackWords;
 let target = "";
 let guesses = [];
+let graywords = [];
+let letterStatuses = {};
 
 function chooseWord() {
 	return words[Math.floor(Math.random() * words.length)];
@@ -67,6 +70,26 @@ function renderBoard() {
 	attemptCount.textContent = guesses.length;
 }
 
+function renderKeyboard() {
+	keyboard.querySelectorAll(".key").forEach((key) => {
+		const status = letterStatuses[key.dataset.letter];
+		key.classList.remove("correct", "present", "absent");
+		if (status) key.classList.add(status);
+	});
+}
+
+function updateLetterStatuses(guess, statuses) {
+	const priority = { absent: 1, present: 2, correct: 3 };
+	guess.split("").forEach((letter, index) => {
+		const status = statuses[index];
+		if (!letterStatuses[letter] || priority[status] > priority[letterStatuses[letter]]) {
+			letterStatuses[letter] = status;
+		}
+		if (status === "absent" && !graywords.includes(letter)) graywords.push(letter);
+	});
+	renderKeyboard();
+}
+
 function showMessage(text, isGameOver = false) {
 	message.textContent = text;
 	message.hidden = !text;
@@ -84,12 +107,15 @@ function finishGame(won) {
 function resetGame() {
 	target = chooseWord();
 	guesses = [];
+	graywords = [];
+	letterStatuses = {};
 	form.hidden = false;
 	answerPanel.hidden = true;
 	showMessage("");
 	input.value = "";
 	input.disabled = false;
 	renderBoard();
+	renderKeyboard();
 	input.focus();
 }
 
@@ -107,6 +133,7 @@ form.addEventListener("submit", (event) => {
 
 	const statuses = getStatuses(guess);
 	guesses.push({ word: guess, statuses });
+	updateLetterStatuses(guess, statuses);
 	renderBoard();
 	input.value = "";
 	const won = guess === target;
@@ -119,6 +146,13 @@ form.addEventListener("submit", (event) => {
 });
 
 resetButton.addEventListener("click", resetGame);
+
+keyboard.addEventListener("click", (event) => {
+	const key = event.target.closest(".key");
+	if (!key || input.disabled || input.value.length >= 5) return;
+	input.value += key.dataset.letter;
+	input.focus();
+});
 
 fetch("five_letter_words.txt")
 	.then((response) => response.ok ? response.text() : "")

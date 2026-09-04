@@ -160,6 +160,41 @@ h1 {
 
 .form-row { gap: 10px; }
 
+.keyboard {
+	display: grid;
+	gap: 6px;
+	margin-top: 18px;
+}
+
+.keyboard-row {
+	display: flex;
+	justify-content: center;
+	gap: 5px;
+}
+
+.key {
+	min-width: 30px;
+	min-height: 42px;
+	padding: 0 5px;
+	border: 1px solid var(--line);
+	color: var(--ink);
+	background: var(--panel);
+	font-size: 12px;
+}
+
+.key:hover { background: var(--panel); }
+
+.key.correct,
+.key.present,
+.key.absent {
+	border-color: transparent;
+	color: #fffdf8;
+}
+
+.key.correct { background: var(--correct); }
+.key.present { background: var(--present); }
+.key.absent { background: var(--absent); }
+
 input, button {
 	min-height: 52px;
 	border: 2px solid var(--ink);
@@ -212,4 +247,6 @@ button:hover { background: var(--accent); }
 	.board { width: min(100%, 310px); }
 	.form-row { align-items: stretch; flex-direction: column; }
 	button { width: 100%; }
+	.keyboard-row { gap: 3px; }
+	.key { width: auto; min-width: 25px; min-height: 38px; padding: 0 3px; }
 }

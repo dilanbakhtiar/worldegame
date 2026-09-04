@@ -2,7 +2,7 @@ import random
 from pathlib import Path
 
 import requests
-
+global graywords
 url = "https://random-word-api.herokuapp.com/word?length=5"
 
 wordlist = sorted(set([
@@ -88,6 +88,8 @@ def checkGuess(guess, answer):
                 correct_positions.append(guess[i])
             elif guess[i] in answer:
                 correct_letters.append(guess[i])
+            elif guess[i] not in answer:
+                graywords.append(guess[i])
         
         if correct_positions or correct_letters:
             
@@ -99,25 +101,3 @@ def checkGuess(guess, answer):
     return "Incorrect guess. Try again."
 
 
-def game():
-    print("Welcome to the Wordle game!")
-    print("You have to guess a 5-letter word.")
-    print("After each guess, you'll get feedback on your guess.")
-    print("Type 'exit' to quit the game.")
-    answer = getRandomWord()
-    
-    for _ in range(6): 
-        guess = input("Enter your guess: ")
-        if guess == 'exit':
-            print("Exiting the game.")
-            break
-        result = checkGuess(guess, answer)
-        print(result)
-        
-    print(f"The correct word was: {answer}")
-
-
-if __name__ == "__main__":
-    game()
-    
-    
