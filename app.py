@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request
 from game import getGuessStatuses, getRandomWord, checkGuess
 
-app = Flask(__name__, template_folder="template")
+app = Flask(__name__, template_folder=".")
 answer = getRandomWord()
 guesses = []
 

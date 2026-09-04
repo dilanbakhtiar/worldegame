@@ -154,7 +154,7 @@ keyboard.addEventListener("click", (event) => {
 	input.focus();
 });
 
-fetch("five_letter_words.txt")
+fetch("./five_letter_words.txt")
 	.then((response) => response.ok ? response.text() : "")
 	.then((text) => {
 		const localWords = text.split(/\s+/).map((word) => word.toLowerCase()).filter((word) => /^[a-z]{5}$/.test(word));
