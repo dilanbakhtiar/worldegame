@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Wordle Game</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<link rel="stylesheet" href="static/style.css">
 </head>
 <body>
 	<main class="game-shell">
@@ -13,7 +13,7 @@
 				<p class="eyebrow">Daily word puzzle</p>
 				<h1>WORDLE</h1>
 			</div>
-			<div class="attempt-count">{{ guesses|length }} <span>/ 6</span></div>
+			<div class="attempt-count"><span id="attempt-count">0</span> <span>/ 6</span></div>
 		</header>
 
 		<section class="intro" aria-labelledby="game-instructions">
@@ -21,40 +21,18 @@
 			<p class="tip">Green means right letter, right place. Yellow means right letter, wrong place.</p>
 		</section>
 
-		<section class="board" aria-label="Guess board">
-			{% for entry in guesses %}
-				<div class="guess-row submitted" aria-label="Guess {{ loop.index }}: {{ entry.word }}">
-					{% for letter in entry.word[:5] %}
-						<span class="tile {{ entry.statuses[loop.index0] }}">{{ letter|upper }}</span>
-					{% endfor %}
-					{% for blank in range(5 - (entry.word|length)) %}
-						<span class="tile empty"></span>
-					{% endfor %}
-				</div>
-			{% endfor %}
-			{% for row in range(6 - (guesses|length)) %}
-				<div class="guess-row" aria-hidden="true">
-					{% for tile in range(5) %}
-						<span class="tile empty"></span>
-					{% endfor %}
-				</div>
-			{% endfor %}
+		<section id="board" class="board" aria-label="Guess board">
 		</section>
 
-		{% if message %}
-			<p class="message {% if game_over %}game-over-message{% endif %}" role="status">{{ message }}</p>
-		{% endif %}
+		<p id="message" class="message" role="status" hidden></p>
 
-		{% if game_over %}
-			<section class="answer-panel" aria-live="polite">
-				<p class="answer-label">{{ 'Solved in ' ~ (guesses|length) ~ ' tries' if won else 'The answer was' }}</p>
-				<strong>{{ answer|upper if answer else 'See the message above' }}</strong>
-				<form class="reset-form" action="{{ url_for('reset') }}" method="post">
-					<button type="submit">Play again <span aria-hidden="true">&#8635;</span></button>
-				</form>
-			</section>
-		{% else %}
-		<form class="guess-form" method="post">
+		<section id="answer-panel" class="answer-panel" aria-live="polite" hidden>
+			<p id="answer-label" class="answer-label"></p>
+			<strong id="answer"></strong>
+			<button id="reset-button" type="button">Play again <span aria-hidden="true">&#8635;</span></button>
+		</section>
+
+		<form id="guess-form" class="guess-form">
 			<label for="guess">Your next guess</label>
 			<div class="form-row">
 				<input id="guess" name="guess" type="text" minlength="5" maxlength="5"
@@ -63,7 +41,6 @@
 				<button type="submit">Guess <span aria-hidden="true">&rarr;</span></button>
 			</div>
 		</form>
-		{% endif %}
 
 		<footer class="legend" aria-label="Tile color legend">
 			<span><i class="legend-swatch correct"></i>Correct</span>
@@ -71,5 +48,6 @@
 			<span><i class="legend-swatch absent"></i>Absent</span>
 		</footer>
 	</main>
+	<script src="static/game.js"></script>
 </body>
 </html>
