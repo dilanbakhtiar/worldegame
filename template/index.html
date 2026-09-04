@@ -49,6 +49,9 @@
 			<section class="answer-panel" aria-live="polite">
 				<p class="answer-label">{{ 'Solved in ' ~ (guesses|length) ~ ' tries' if won else 'The answer was' }}</p>
 				<strong>{{ answer|upper if answer else 'See the message above' }}</strong>
+				<form class="reset-form" action="{{ url_for('reset') }}" method="post">
+					<button type="submit">Play again <span aria-hidden="true">&#8635;</span></button>
+				</form>
 			</section>
 		{% else %}
 		<form class="guess-form" method="post">

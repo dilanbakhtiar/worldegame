@@ -1,12 +1,20 @@
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request
 from game import getGuessStatuses, getRandomWord, checkGuess
 
 app = Flask(__name__, template_folder="template")
 answer = getRandomWord()
 guesses = []
 
+def reset_game():
+    global answer, guesses
+    answer = getRandomWord()
+    guesses = []
+
 @app.route("/", methods=["GET", "POST"])
 def index():
+    if request.method == "GET":
+        reset_game()
+
     message = ""
     won = bool(guesses and guesses[-1]["word"] == answer)
 
@@ -30,6 +38,10 @@ def index():
         won=won,
         answer=answer if game_over else ""
     )
+
+@app.route("/reset", methods=["POST"])
+def reset():
+    return redirect("/")
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=False)

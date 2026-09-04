@@ -142,6 +142,10 @@ h1 {
 	letter-spacing: 3px;
 }
 
+.reset-form { margin-top: 18px; }
+
+.reset-form button { width: 100%; }
+
 .guess-form { margin-top: 24px; }
 .guess-form label {
 	display: block;
